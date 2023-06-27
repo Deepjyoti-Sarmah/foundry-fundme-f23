@@ -19,9 +19,11 @@ contract FundMe {
         public addressToAmountFunded;
 
     address public immutable i_owner;
+    AggregatorV3Interface private s_priceFeed;
 
-    constructor() {
+    constructor(address priceFeed) {
         i_owner = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
     function fund() public payable {
@@ -34,7 +36,7 @@ contract FundMe {
         //undo any actions that have been done, and send the remaining gas back
 
         require(
-            msg.value.getConvertionRate() >= MINIMUM_USD,
+            msg.value.getConvertionRate(s_priceFeed) >= MINIMUM_USD,
             "didn't send enough eth"
         ); // 1e18 = 1 ETH = 1 * 10 ** 18 = 1000000000000000000
 
@@ -74,6 +76,10 @@ contract FundMe {
             revert FundMe_NotOwner();
         }
         _;
+    }
+
+    function getVersion() public view returns (uint256) {
+        return s_priceFeed.version();
     }
 
     receive() external payable {
