@@ -7,7 +7,7 @@ pragma solidity ^0.8.18;
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "./PriceConverter.sol";
 
-error NotOwner();
+error FundMe_NotOwner();
 
 contract FundMe {
     using PriceConverter for uint256;
@@ -71,7 +71,7 @@ contract FundMe {
     modifier onlyOwner() {
         // require(msg.sender == i_owner, "sender is not owner");
         if (msg.sender != i_owner) {
-            revert NotOwner();
+            revert FundMe_NotOwner();
         }
         _;
     }
